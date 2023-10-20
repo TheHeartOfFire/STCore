@@ -23,37 +23,128 @@ namespace STCore_Testing
             _sut6 = new GameCore(6);
         }
 
-        [Theory]
-        [InlineData(0, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(1, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(2, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(0, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(1, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 })]
-        [InlineData(2, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 1 })]
-        public void ThreePlayerRoundsNoTie(int expected, params int[][] selections)
-        {
-            for (int i = 0; i < selections.Length; i++)
-                _sut3.ProcessRound(i % 3, selections[i], false, false);
-
-            var actual = _sut3.GetWinner();
-            Assert.Equal( expected, actual);
-        }
         
         [Theory]
-        [InlineData(0,1,new int[] { 1, 1, 0 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(0,2,new int[] { 0, 1, 2 }, new int[] { 1, 0, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(1,2,new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
+        //3 player games
+        //No tie
+        [InlineData(3, new int[] { 0 }), InlineData(3, new int[] { 1 }), 
+            InlineData(3, new int[] { 2 })]
+        //2 way ties
+        [InlineData(3, new int[] { 0, 1 }), InlineData(3, new int[] { 0, 2 }), 
+            InlineData(3, new int[] { 1, 2 })]
+        //3 way ties
+        [InlineData(3, new int[] {0, 1, 2})]
 
-        [InlineData(0,1,new int[] { 1, 1, 0 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 1, 0 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 })]
-        [InlineData(0,2,new int[] { 0, 1, 2 }, new int[] { 1, 0, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 1, 0, 1 }, new int[] { 0, 1, 2 })]
-        [InlineData(1,2,new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 1 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 2 }, new int[] { 0, 1, 1 })]
-        public void ThreePlayerRounds2WayTie(int p1Index, int p2Index, params int[][] selections)
+        //4 player games
+        //No tie
+        [InlineData(4, new int[] { 0 }), InlineData(4, new int[] { 1 }), 
+            InlineData(4, new int[] { 2 }), InlineData(4, new int[] { 3 })]
+        //2 way tie
+        [InlineData(4, new int[] { 0, 1 }), InlineData(4, new int[] { 0, 2 }), 
+            InlineData(4, new int[] { 0, 3 }), InlineData(4, new int[] { 1, 2 }), 
+            InlineData(4, new int[] { 1, 3 }), InlineData(4, new int[] { 2, 3 })]
+        //3 way tie
+        [InlineData(4, new int[] {0, 1, 2}), InlineData(4, new int[] { 0, 1, 3 }), 
+            InlineData(4, new int[] { 1, 2, 3 })]
+        //4 way tie
+        [InlineData(4, new int[] { 0, 1, 2, 3 })]
+
+        //5 player games
+        //No tie
+        [InlineData(5, new int[] { 0 }), InlineData(5, new int[] { 1 }),
+            InlineData(5, new int[] { 2 }), InlineData(5, new int[] { 3 }), 
+            InlineData(5, new int[] { 4 })]
+        //2 way tie
+        [InlineData(5, new int[] { 0, 1 }), InlineData(5, new int[] { 0, 2 }),
+            InlineData(5, new int[] { 0, 3 }), InlineData(5, new int[] { 0, 4 }),
+            InlineData(5, new int[] { 1, 2 }), InlineData(5, new int[] { 1, 3 }),
+            InlineData(5, new int[] { 1, 4 }), InlineData(5, new int[] { 2, 3 }),
+            InlineData(5, new int[] { 2, 4 }), InlineData(5, new int[] { 3, 4 })]
+        //3 way tie
+        [InlineData(5, new int[] { 0, 1, 2 }), InlineData(5, new int[] { 0, 1, 3 }),
+            InlineData(5, new int[] { 0, 1, 4 }), InlineData(5, new int[] { 1, 2, 3 }),
+            InlineData(5, new int[] { 1, 2, 4 }), InlineData(5, new int[] { 2, 3, 4 })]
+        //4 way tie
+        [InlineData(5, new int[] { 0, 1, 2, 3 }), InlineData(5, new int[] { 0, 1, 2, 4 }),
+            InlineData(5, new int[] { 1, 2, 3, 4 })]
+        //5 way tie
+        [InlineData(5, new int[] {0, 1, 2, 3, 4})]
+
+        //6 player game
+        //No tie
+        [InlineData(6, new int[] { 0 }), InlineData(6, new int[] { 1 }),
+            InlineData(6, new int[] { 2 }), InlineData(6, new int[] { 3 }),
+            InlineData(6, new int[] { 4 }), InlineData(6, new int[] { 5 })]
+        //2 way tie
+        [InlineData(6, new int[] { 0, 1 }), InlineData(6, new int[] { 0, 2 }),
+            InlineData(6, new int[] { 0, 3 }), InlineData(6, new int[] { 0, 4 }),
+            InlineData(6, new int[] { 0, 5 }), InlineData(6, new int[] { 1, 2 }),
+            InlineData(6, new int[] { 1, 3 }), InlineData(6, new int[] { 1, 4 }),
+            InlineData(6, new int[] { 1, 5 }), InlineData(6, new int[] { 2, 3 }),
+            InlineData(6, new int[] { 2, 4 }), InlineData(6, new int[] { 2, 5 }),
+            InlineData(6, new int[] { 3, 4 }), InlineData(6, new int[] { 3, 5 }),
+            InlineData(6, new int[] { 4, 5 })]
+        //3 way tie
+        [InlineData(6, new int[] { 0, 1, 2 }), InlineData(6, new int[] { 0, 1, 3 }),
+            InlineData(6, new int[] { 0, 1, 4 }), InlineData(6, new int[] { 0, 1, 5 }),
+            InlineData(6, new int[] { 1, 2, 3 }), InlineData(6, new int[] { 1, 2, 4 }),
+            InlineData(6, new int[] { 1, 2, 5 }), InlineData(6, new int[] { 2, 3, 4 }),
+            InlineData(6, new int[] { 2, 3, 5 }), InlineData(6, new int[] { 3, 4, 5 })]
+        //4 way tie
+        [InlineData(6, new int[] { 0, 1, 2, 3 }), InlineData(6, new int[] { 0, 1, 2, 4 }),
+            InlineData(6, new int[] { 0, 1, 2, 5 }), InlineData(6, new int[] { 1, 2, 3, 4 }),
+            InlineData(6, new int[] { 1, 2, 3, 5 }), InlineData(6, new int[] { 2, 3, 4, 5 })]
+        //5 way tie
+        [InlineData(6, new int[] { 0, 1, 2, 3, 4 }), InlineData(6, new int[] { 0, 1, 2, 3, 5 }), 
+            InlineData(6, new int[] { 1, 2, 3, 4, 5 })]
+        //6 way tie
+        [InlineData(5, new int[] { 0, 1, 2, 3, 4, 5 })]
+        public void FullGame(int players, int[] tyeingPlayers)
         {
-            for (int i = 0; i < selections.Length; i++)
-                _sut3.ProcessRound(i % 3, selections[i], false, false);
+            GameCore _sut;
 
-            var expected = _sut3.GetTieBreaker().BreakTie(p1Index, p2Index);
-            var actual = _sut3.GetWinner();
+            var withPoints = new int[players];
+            var withoutPoints = new int[players];
+            for (int i = 0; i < players; i++)
+            {
+                if(tyeingPlayers.Length == 1)
+                {
+                    withPoints[i]++;
+                    if(tyeingPlayers[0] == i)
+                        withPoints[i]++;
+                }
+
+                if (tyeingPlayers.Length > 1)
+                    if (tyeingPlayers.Contains(i))
+                        withPoints[i] = 1;
+                withoutPoints[i] = i;
+            }
+
+            switch (players)
+            {
+                case 3:
+                    _sut = _sut3;
+                    break;
+                case 4:
+                    _sut = _sut4;
+                    break;
+                case 5:
+                    _sut = _sut5;
+                    break;
+                case 6:
+                    _sut = _sut6;
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(players));
+
+            }
+
+            for (int i = 0; i < players * 2; i++)
+                _sut.ProcessRound(i % players,
+                    i == tyeingPlayers[0] ? withPoints : withoutPoints,
+                    false, false);
+
+            var expected = _sut.GetTieBreaker().BreakTie(tyeingPlayers);
+            var actual = _sut.GetWinner();
             Assert.Equal(expected, actual);
         }
 
