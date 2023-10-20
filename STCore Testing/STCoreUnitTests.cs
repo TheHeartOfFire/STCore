@@ -23,28 +23,28 @@ namespace STCore_Testing
             _sut6 = new GameCore(6);
         }
 
-        
+
         [Theory]
         //3 player games
         //No tie
-        [InlineData(3, new int[] { 0 }), InlineData(3, new int[] { 1 }), 
+        [InlineData(3, new int[] { 0 }), InlineData(3, new int[] { 1 }),
             InlineData(3, new int[] { 2 })]
         //2 way ties
-        [InlineData(3, new int[] { 0, 1 }), InlineData(3, new int[] { 0, 2 }), 
+        [InlineData(3, new int[] { 0, 1 }), InlineData(3, new int[] { 0, 2 }),
             InlineData(3, new int[] { 1, 2 })]
         //3 way ties
-        [InlineData(3, new int[] {0, 1, 2})]
+        [InlineData(3, new int[] { 0, 1, 2 })]
 
         //4 player games
         //No tie
-        [InlineData(4, new int[] { 0 }), InlineData(4, new int[] { 1 }), 
+        [InlineData(4, new int[] { 0 }), InlineData(4, new int[] { 1 }),
             InlineData(4, new int[] { 2 }), InlineData(4, new int[] { 3 })]
         //2 way tie
-        [InlineData(4, new int[] { 0, 1 }), InlineData(4, new int[] { 0, 2 }), 
-            InlineData(4, new int[] { 0, 3 }), InlineData(4, new int[] { 1, 2 }), 
+        [InlineData(4, new int[] { 0, 1 }), InlineData(4, new int[] { 0, 2 }),
+            InlineData(4, new int[] { 0, 3 }), InlineData(4, new int[] { 1, 2 }),
             InlineData(4, new int[] { 1, 3 }), InlineData(4, new int[] { 2, 3 })]
         //3 way tie
-        [InlineData(4, new int[] {0, 1, 2}), InlineData(4, new int[] { 0, 1, 3 }), 
+        [InlineData(4, new int[] { 0, 1, 2 }), InlineData(4, new int[] { 0, 1, 3 }),
             InlineData(4, new int[] { 1, 2, 3 })]
         //4 way tie
         [InlineData(4, new int[] { 0, 1, 2, 3 })]
@@ -52,7 +52,7 @@ namespace STCore_Testing
         //5 player games
         //No tie
         [InlineData(5, new int[] { 0 }), InlineData(5, new int[] { 1 }),
-            InlineData(5, new int[] { 2 }), InlineData(5, new int[] { 3 }), 
+            InlineData(5, new int[] { 2 }), InlineData(5, new int[] { 3 }),
             InlineData(5, new int[] { 4 })]
         //2 way tie
         [InlineData(5, new int[] { 0, 1 }), InlineData(5, new int[] { 0, 2 }),
@@ -68,7 +68,7 @@ namespace STCore_Testing
         [InlineData(5, new int[] { 0, 1, 2, 3 }), InlineData(5, new int[] { 0, 1, 2, 4 }),
             InlineData(5, new int[] { 1, 2, 3, 4 })]
         //5 way tie
-        [InlineData(5, new int[] {0, 1, 2, 3, 4})]
+        [InlineData(5, new int[] { 0, 1, 2, 3, 4 })]
 
         //6 player game
         //No tie
@@ -95,11 +95,11 @@ namespace STCore_Testing
             InlineData(6, new int[] { 0, 1, 2, 5 }), InlineData(6, new int[] { 1, 2, 3, 4 }),
             InlineData(6, new int[] { 1, 2, 3, 5 }), InlineData(6, new int[] { 2, 3, 4, 5 })]
         //5 way tie
-        [InlineData(6, new int[] { 0, 1, 2, 3, 4 }), InlineData(6, new int[] { 0, 1, 2, 3, 5 }), 
+        [InlineData(6, new int[] { 0, 1, 2, 3, 4 }), InlineData(6, new int[] { 0, 1, 2, 3, 5 }),
             InlineData(6, new int[] { 1, 2, 3, 4, 5 })]
         //6 way tie
-        [InlineData(5, new int[] { 0, 1, 2, 3, 4, 5 })]
-        public void FullGame(int players, int[] tyeingPlayers)
+        [InlineData(6, new int[] { 0, 1, 2, 3, 4, 5 })]
+        public void FullGame(int players, int[] tieingPlayers)
         {
             GameCore _sut;
 
@@ -107,16 +107,8 @@ namespace STCore_Testing
             var withoutPoints = new int[players];
             for (int i = 0; i < players; i++)
             {
-                if(tyeingPlayers.Length == 1)
-                {
-                    withPoints[i]++;
-                    if(tyeingPlayers[0] == i)
-                        withPoints[i]++;
-                }
-
-                if (tyeingPlayers.Length > 1)
-                    if (tyeingPlayers.Contains(i))
-                        withPoints[i] = 1;
+                if (tieingPlayers.Contains(i) || tieingPlayers.Length == 1)
+                    withPoints[i] = 1;
                 withoutPoints[i] = i;
             }
 
@@ -140,14 +132,98 @@ namespace STCore_Testing
 
             for (int i = 0; i < players * 2; i++)
                 _sut.ProcessRound(i % players,
-                    i == tyeingPlayers[0] ? withPoints : withoutPoints,
+                    tieingPlayers.Contains(i) ? withPoints : withoutPoints,
                     false, false);
 
-            var expected = _sut.GetTieBreaker().BreakTie(tyeingPlayers);
+            var expected = _sut.GetTieBreaker().BreakTie(tieingPlayers);
             var actual = _sut.GetWinner();
             Assert.Equal(expected, actual);
         }
+        [Theory]
+        [InlineData(new int[] { 0 }, new int[] { -1, -1, -1, 1, -1, -1 }, // shield, round 4
+           new int[] { 1, 0, 2 },// reader 0 | points 0, 0, 0 | no point increase
+           new int[] { 2, 2, 1 },// reader 1 | points 1, 1, 0 | +1 to 0 and 1
+           new int[] { 0, 1, 2 },// reader 2 | points 1, 1, 0 | no point increase
+           new int[] { 1, 0, 1 },// reader 0 | points 1, 0, 0 | shield, -1 to 1
+           new int[] { 2, 1, 2 },// reader 1 | points 1, 0, 0 | no point increase
+           new int[] { 0, 2, 0 })]//reader 2 | points 2, 0, 1 | +1 to 0 and 2
 
+        [InlineData(new int[] { 1 }, new int[] { -1, -1, -1, 0, -1, -1, -1, -1 },// sword round 4
+            new int[] { 1, 1, 2, 2 },// reader 0 | points 1, 1, 0, 0 | +1 to 0 and 1
+            new int[] { 0, 3, 0, 3 },// reader 1 | points 1, 2, 0, 1 | +1 to 1 and 3
+            new int[] { 2, 0, 0, 2 },// reader 2 | points 1, 3, 1, 1 | +1 to 1 and 2
+            new int[] { 3, 1, 1, 3 },// reader 3 | points 0, 3, 1, 1 | sword, -1 to 0
+            new int[] { 2, 2, 1, 1 },// reader 0 | points 1, 4, 1, 1 | +1 to 0 and 1
+            new int[] { 3, 3, 0, 0 },// reader 1 | points 2, 5, 1, 1 | +1 to 0 and 1
+            new int[] { 0, 2, 2, 0 },// reader 2 | points 2, 6, 2, 1 | +1 to 1 and 2
+            new int[] { 1, 3, 3, 1 })]//reader 3 | points 3, 6, 2, 2 | +1 to 0 and 4
+
+        [InlineData(new int[] { 0, 1, 2 }, new int[] { -1, -1, -1, -1, -1, 0, -1, 1, -1, -1 },// sword round 6, shield round 8
+            new int[] { 2, 2, 4, 0, 2 },// reader 0 | points 2, 1, 0, 0, 1 | +2 to 0, +1 to 1 and 4
+            new int[] { 4, 3, 3, 2, 0 },// reader 1 | points 2, 2, 1, 0, 1 | +1 to 1 and 2
+            new int[] { 0, 3, 1, 0, 2 },// reader 2 | points 2, 2, 1, 0, 1 | no point increase
+            new int[] { 1, 0, 4, 3, 4 },// reader 3 | points 2, 2, 1, 0, 1 | no point increase
+            new int[] { 2, 1, 4, 2, 4 },// reader 4 | points 2, 2, 2, 0, 2 | +1 to 2 and 4
+            new int[] { 3, 1, 2, 3, 0 },// reader 0 | points 2, 2, 2, 0, 2 | sword, 3 slected by reader, 3 guessed correctly, no point change
+            new int[] { 0, 4, 4, 2, 1 },// reader 1 | points 2, 3, 3, 0, 2 | +1 to 1 and 2
+            new int[] { 4, 2, 3, 1, 0 },// reader 2 | points 2, 3, 3, -1, 2| shield, no consensus, -1 to 3 [reader + 1]
+            new int[] { 2, 4, 0, 2, 1 },// reader 3 | points 3, 3, 3, 0, 2 | +1 to 0 and 3
+            new int[] { 3, 1, 0, 3, 4 })]//reader 4 | points 3, 3, 3, 0, 2 | no point increase
+
+        [InlineData(new int[] { 4 }, new int[] { -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, 0, -1 },// shield round 7, sword round 10
+            new int[] { 4, 2, 2, 4, 4, 0 },// reader 0 | points 2, 0, 0, 1, 1, 0 | +2 to 0, +1 to 3 and 4
+            new int[] { 1, 4, 1, 0, 4, 0 },// reader 1 | points 2, 1, 0, 1, 2, 0 | +1 to 1 and 4
+            new int[] { 2, 5, 1, 2, 1, 2 },// reader 2 | points 2, 1, 1, 1, 3, 0 | +1 to 2 and 4
+            new int[] { 3, 0, 2, 3, 1, 2 },// reader 3 | points 3, 1, 1, 2, 3, 0 | +1 to 0 and 3
+            new int[] { 1, 1, 5, 4, 0, 0 },// reader 4 | points 3, 1, 1, 2, 4, 1 | +1 to 4 and 5
+            new int[] { 5, 5, 0, 1, 3, 3 },// reader 5 | points 3, 1, 1, 2, 5, 2 | +1 to 4 and 5
+            new int[] { 0, 4, 4, 2, 3, 2 },// reader 0 | points 3, 1, 1, 2, 4, 2 | shield, -1 to 4
+            new int[] { 4, 2, 2, 1, 0, 0 },// reader 1 | points 3, 2, 2, 2, 4, 2 | +1 to 1 and 2
+            new int[] { 2, 4, 0, 3, 3, 1 },// reader 2 | points 3, 2, 2, 2, 4, 2 | no point increase
+            new int[] { 3, 1, 0, 2, 4, 4 },// reader 3 | points 3, 2, 1, 2, 4, 2 | sword, -1 to 2
+            new int[] { 1, 5, 5, 0, 0, 1 },// reader 4 | points 3, 2, 1, 3, 5, 2 | +1 to 3 and 4
+            new int[] { 5, 0, 2, 4, 4, 5 })]//reader 5 | points 4, 2, 1, 3, 5, 3 | +1 to 0 and 5
+
+        [InlineData(new int[] { 1, 2 }, new int[] { -1, -1, -1, 0, -1, -1, -1, -1 },// sword round 4
+            new int[] { 1, 3, 2, 0 },// reader 0 | points  0, 0, 0, 0 | no point increase
+            new int[] { 3, 1, 2, 1 },// reader 1 | points  0, 1, 0, 1 | +1 to 1 and 3
+            new int[] { -1, 0, 2, 1 },//reader 2 | points -1, 1, 1, 1 | -1 to 0, +1 to 2
+            new int[] { 2, 1, 3, -1 },//reader 3 | points -1, 1, 1, 0 | sword, -1 to 3
+            new int[] { 3, 2, 1, 1 },// reader 0 | points -1, 1, 1, 0 | no point increase
+            new int[] { -1, 1, 0, 3 },//reader 1 | points -2, 2, 1, 0 | -1 to 0, +1 to 1
+            new int[] { 0, 3, 2, 2 },// reader 2 | points -2, 2, 2, 1 | +1 to 2 and 3
+            new int[] { 2, 3, 1, 0 })]//reader 3 | points -2, 2, 2, 1 | no point change
+        public void RealisticFullGame(int[] winners, int[] wilds, params int[][] selections)
+        {
+            GameCore _sut;
+            var players = selections[0].Length;
+
+            switch (players)
+            {
+                case 3:
+                    _sut = _sut3;
+                    break;
+                case 4:
+                    _sut = _sut4;
+                    break;
+                case 5:
+                    _sut = _sut5;
+                    break;
+                case 6:
+                    _sut = _sut6;
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(players));
+
+            }
+            for (int i = 0; i < selections.Length; i++)
+                _sut.ProcessRound(i % players,
+                    selections[i],
+                    wilds[i] == 1, wilds[i] == 0);
+
+            var expected = _sut.GetTieBreaker().BreakTie(winners);
+            var actual = _sut.GetWinner();
+            Assert.Equal(expected, actual);
+        }
         [Theory]
         [InlineData(new int[] { 1, 0, 0 },0,  1)]
         [InlineData(new int[] { -1, 0, 0 },0,  -1)]
@@ -179,46 +255,6 @@ namespace STCore_Testing
                 actual *= value;
 
             Assert.Equal(1, actual);
-
-        }
-
-        [Theory]
-        [InlineData(0,1)]
-        [InlineData(0,2)]
-        [InlineData(1,2)]
-        public void BreakTie(int p1Index, int p2Index)
-        {
-            var tokens = _sut3.GetTieBreaker().GetTokens();
-            var p1 = tokens[p1Index];
-            var p2 = tokens[p2Index];
-
-            var expected = p1Index;
-            if(p2 > p1)
-                expected = p2Index;
-
-            var actual = _sut3.GetTieBreaker().BreakTie(p1Index, p2Index);
-            Assert.Equal(expected, actual);
-
-        }
-
-        [Fact]
-        public void Break3Tie()
-        {
-            var tokens = _sut3.GetTieBreaker().GetTokens();
-
-            var expected = 0;
-
-            if (tokens[0] < tokens[1])
-                if (tokens[1] < tokens[2])
-                    expected = 2;
-                else
-                    expected = 1;
-            else
-                if(tokens[0] < tokens[2])
-                    expected = 2;
-
-            var actual = _sut3.GetTieBreaker().BreakTie(new int[] {0, 1, 2});
-            Assert.Equal(expected, actual);
 
         }
     }

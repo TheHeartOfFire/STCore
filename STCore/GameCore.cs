@@ -108,15 +108,19 @@ namespace STCore
         public void ProcessRound(int readerIndex, int[] selections, bool isShield, bool isSword)
         {
             OnPlayingRoundStarted();//TODO: Add event args for ProcessRound args
-            
-            if (isShield)
+
+            if (selections[readerIndex] == -1)
+            {
+                score.AddPoints(readerIndex, -1);
+            }
+            else if (isShield)
             {
                 Dictionary<int, int> vote = new Dictionary<int, int>();
 
-                for(int i = 0; i < selections.Length; i++)
+                for (int i = 0; i < selections.Length; i++)
                 {
                     if (!vote.ContainsKey(selections[i]))
-                        vote.Add(selections[i], 1);
+                        vote.Add(selections[i], 0);
 
                     vote[selections[i]]++;
                 }
@@ -127,27 +131,19 @@ namespace STCore
                     if (vote[i] > vote[loser] && i != readerIndex)
                         loser = i;
 
-                score.AddPoints(loser, -1);
-                return;
-            }
+                
 
-            if(isSword)
+                score.AddPoints(vote.Keys.Count == selections.Length ? (readerIndex + 1) % selections.Length : loser, -1);
+            }
+            else if (isSword)
             {
                 score.AddPoints(selections[readerIndex], -1);
 
                 for (int i = 0; i < selections.Length; i++)
                     if (selections[i] == selections[readerIndex] && i != readerIndex)
                         score.AddPoints(i, 1);
-                return;
             }
-
-            if (selections[readerIndex] == -1)
-            {
-                score.AddPoints(readerIndex, -1);
-                return;
-            }
-
-            for (int i = 0; i < selections.Length; i++)
+            else for (int i = 0; i < selections.Length; i++)
             {
 
                 if(i != readerIndex)

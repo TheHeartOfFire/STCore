@@ -51,9 +51,10 @@ namespace STCore
 
             int winner = 0;
 
-            for(int i = 1; i < players.Length; i++)
-                if(players.Length > i )
-                    winner = BreakTie(players[winner], players[i]);
+            for (int i = 1; i < players.Length; i++)
+                winner = Array.IndexOf(players, BreakTie(players[winner], players[i]));
+
+            Console.WriteLine("TieBreaker.BreakTie(int[] players) | Actual winner: " + winner);
 
             OnGameOverTieEnded();
             return winner;
