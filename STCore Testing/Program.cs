@@ -13,8 +13,10 @@ namespace STCore_Testing
 
         static void Main(string[] args)
         {
-            game = new GameCore(3);
-            
+            game = new GameCore();
+
+            game.Initialize(3);
+
             game.InitStarted += Game_InitStarted;
             game.InitEnded += Game_InitEnded;
             game.PlayingStarted += Game_PlayingStarted;

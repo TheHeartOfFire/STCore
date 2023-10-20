@@ -85,7 +85,7 @@ namespace STCore
             return state;
         }
 
-        private readonly int PlayerCount;
+        private int PlayerCount;
         public int GetPlayerCount() => PlayerCount;
         public int GetRoundCount() => PlayerCount * 2;
         private int currentRound = 1;
@@ -96,7 +96,8 @@ namespace STCore
         public TieBreaker GetTieBreaker() => breaker;
         private int winner = -1;
         public int GetWinner() => winner;
-        public GameCore(int playerCount)
+        
+        public void Initialize(int playerCount)
         {
             ChangeGameState(GAMESTATE.INIT);
             PlayerCount = playerCount;
@@ -107,6 +108,9 @@ namespace STCore
 
         public void ProcessRound(int readerIndex, int[] selections, bool isShield, bool isSword)
         {
+            if (CurrentGameState != GAMESTATE.PLAYING)
+                throw new Exception("Invalid gamestate: Tried to process a round while still initializing! Please run x before trying to process a round.");
+
             OnPlayingRoundStarted();//TODO: Add event args for ProcessRound args
 
             if (selections[readerIndex] == -1)

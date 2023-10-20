@@ -10,17 +10,11 @@ namespace STCore_Testing
 {
     public class STCoreUnitTests
     {
-        private readonly GameCore _sut3;
-        private readonly GameCore _sut4;
-        private readonly GameCore _sut5;
-        private readonly GameCore _sut6;
+        private readonly GameCore _sut;
 
         public STCoreUnitTests()
         {
-            _sut3 = new GameCore(3);
-            _sut4 = new GameCore(4);
-            _sut5 = new GameCore(5);
-            _sut6 = new GameCore(6);
+            _sut = new GameCore();
         }
 
 
@@ -101,7 +95,7 @@ namespace STCore_Testing
         [InlineData(6, new int[] { 0, 1, 2, 3, 4, 5 })]
         public void FullGame(int players, int[] tieingPlayers)
         {
-            GameCore _sut;
+            _sut.Initialize(players);
 
             var withPoints = new int[players];
             var withoutPoints = new int[players];
@@ -110,24 +104,6 @@ namespace STCore_Testing
                 if (tieingPlayers.Contains(i) || tieingPlayers.Length == 1)
                     withPoints[i] = 1;
                 withoutPoints[i] = i;
-            }
-
-            switch (players)
-            {
-                case 3:
-                    _sut = _sut3;
-                    break;
-                case 4:
-                    _sut = _sut4;
-                    break;
-                case 5:
-                    _sut = _sut5;
-                    break;
-                case 6:
-                    _sut = _sut6;
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(players));
-
             }
 
             for (int i = 0; i < players * 2; i++)
@@ -195,26 +171,9 @@ namespace STCore_Testing
             new int[] { 2, 3, 1, 0 })]//reader 3 | points -2, 2, 2, 1 | no point change
         public void RealisticFullGame(int[] winners, int[] wilds, params int[][] selections)
         {
-            GameCore _sut;
             var players = selections[0].Length;
+            _sut.Initialize(players);
 
-            switch (players)
-            {
-                case 3:
-                    _sut = _sut3;
-                    break;
-                case 4:
-                    _sut = _sut4;
-                    break;
-                case 5:
-                    _sut = _sut5;
-                    break;
-                case 6:
-                    _sut = _sut6;
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(players));
-
-            }
             for (int i = 0; i < selections.Length; i++)
                 _sut.ProcessRound(i % players,
                     selections[i],
@@ -233,9 +192,11 @@ namespace STCore_Testing
         [InlineData(new int[] { 0, 0, -1 }, 2, -1)]
         public void AddPoints(int[] expected,int playerIndex,  int points)
         {
-            _sut3.GetScoreboard().AddPoints(playerIndex, points);
+            _sut.Initialize(3);
 
-            var actual = _sut3.GetScoreboard().GetPoints();
+            _sut.GetScoreboard().AddPoints(playerIndex, points);
+
+            var actual = _sut.GetScoreboard().GetPoints();
 
             Assert.Equal(expected, actual);
         }
@@ -243,7 +204,9 @@ namespace STCore_Testing
         [Fact]
         public void TokenDistribution()
         {
-            var tokens = _sut3.GetTieBreaker().GetTokens();
+            _sut.Initialize(3);
+            var tokens = _sut.GetTieBreaker().GetTokens();
+
             int[] valueQty = new int[tokens.Length];
 
             for (int i = 0; i < tokens.Length; i++)
