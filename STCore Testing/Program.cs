@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static STCore.EventArgs;
 
 namespace STCore_Testing
 {
@@ -50,17 +51,19 @@ namespace STCore_Testing
 
         }
 
-        private static void Game_GameOverEnded()
+        private static void Game_GameOverEnded(GameOverArgs e)
         {
-            Console.WriteLine("Winner is: " + game.GetWinner());
+            Console.WriteLine("Winner is: " + e.Winner);
+            Console.WriteLine("Points: " + e.Scoreboard.GetPoints().ToString());
+            Console.WriteLine("Tokens: " + e.TieBreaker.GetTokens().ToString());
 
             Console.WriteLine("GAME_OVER: End");
             Console.ReadLine();
         }
 
 
-        private static void Program_GameOverTieEnded()
-            => Console.WriteLine("GAME_OVER: TIEBREAKER: End");
+        private static void Program_GameOverTieEnded(TieBreakArgs e)
+            => Console.WriteLine("GAME_OVER: TIEBREAKER: End\nPlayer " + (e.Winner+1).ToString() + " won the tie!");
 
         private static void Program_GameOverTieStarted()
             => Console.WriteLine("GAME_OVER: TIEBREAKER: Start");
@@ -74,17 +77,22 @@ namespace STCore_Testing
         private static void Game_PlayingRoundEnded()
             => Console.WriteLine("PLAYING: ROUND: End");
 
-        private static void Program_PlayingPointsChanged()
-            => Console.WriteLine("PLAYING: POINTS: Change");
+        private static void Program_PlayingPointsChanged(PointsChangedArgs e)
+            => Console.WriteLine("PLAYING: POINTS: Change\n" +
+                "Player " + (e.Player + 1).ToString() + " received " + e.PointDelta.ToString() + " points!");
 
-        private static void Game_PlayingRoundStarted()
-            => Console.WriteLine("PLAYING: ROUND: Start");
+        private static void Game_PlayingRoundStarted(RoundArgs e)
+            => Console.WriteLine("PLAYING: ROUND: Start\n" +
+                "Reader: " + e.ReaderIndex + "\n" +
+                "Selections: " + e.Selections.ToString() + "\n" +
+                "Wild: " + (e.IsShield ? "Shield" : e.IsSword ? "Sword" : "None"));
 
         private static void Game_PlayingStarted()
             => Console.WriteLine("PLAYING: Start");
 
-        private static void Game_InitEnded()
-            => Console.WriteLine("INIT: End");
+        private static void Game_InitEnded(InitArgs e)
+            => Console.WriteLine("INIT: End\n" +
+                "Starting a " + e.PlayerCount.ToString() + " player game!");
 
         private static void Game_InitStarted()
             => Console.WriteLine("INIT: Start");

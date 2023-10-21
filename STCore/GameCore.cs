@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static STCore.EventArgs;
 
 namespace STCore
 {
     public class GameCore
     {
         public delegate void Notify();
+        public delegate void InitEventHandler(InitArgs e);
+        public delegate void RoundEventHandler(RoundArgs e);
+        public delegate void PointsChangedEventHandler(PointsChangedArgs e);
+        public delegate void TieBreakEventHandler(TieBreakArgs e);
+        public delegate void GameOverEventHandler(GameOverArgs e);
         //INIT Events
         public event Notify InitStarted;
         protected virtual void OnInitStarted() => InitStarted?.Invoke();
-        public event Notify InitEnded;
-        protected virtual void OnInitEnded() => InitEnded?.Invoke();
+        public event InitEventHandler InitEnded;
+        protected virtual void OnInitEnded(InitArgs e) => InitEnded?.Invoke(e);
         //PLAYING Events
         public event Notify PlayingStarted;
         protected virtual void OnPlayingStarted() => PlayingStarted?.Invoke();
-        public event Notify PlayingRoundStarted;
-        protected virtual void OnPlayingRoundStarted() => PlayingRoundStarted?.Invoke();
+        public event RoundEventHandler PlayingRoundStarted;
+        protected virtual void OnPlayingRoundStarted(RoundArgs e) => PlayingRoundStarted?.Invoke(e);
         public event Notify PlayingRoundEnded;
         protected virtual void OnPlayingRoundEnded() => PlayingRoundEnded?.Invoke();
         public event Notify PlayingEnded;
@@ -26,8 +32,8 @@ namespace STCore
         //GAME_OVER Events
         public event Notify GameOverStarted;
         protected virtual void OnGameOverStarted() => GameOverStarted?.Invoke();
-        public event Notify GameOverEnded;
-        protected virtual void OnGameOverEnded() => GameOverEnded?.Invoke();
+        public event GameOverEventHandler GameOverEnded;
+        protected virtual void OnGameOverEnded(GameOverArgs e) => GameOverEnded?.Invoke(e);
 
         public enum GAMESTATE
         {
@@ -42,13 +48,13 @@ namespace STCore
             switch (CurrentGameState)
             {
                 case GAMESTATE.INIT:
-                    OnInitEnded();
+                    OnInitEnded(new InitArgs( PlayerCount, breaker));
                     break;
                     case GAMESTATE.PLAYING:
                     OnPlayingEnded();
                     break ;
                     case GAMESTATE.GAME_OVER:
-                    OnGameOverEnded();
+                    OnGameOverEnded( new GameOverArgs(winner, score, breaker));
                     break;
             }
             CurrentGameState = newState;
@@ -111,7 +117,7 @@ namespace STCore
             if (CurrentGameState != GAMESTATE.PLAYING)
                 throw new Exception("Invalid gamestate: Tried to process a round while still initializing! Please run x before trying to process a round.");
 
-            OnPlayingRoundStarted();//TODO: Add event args for ProcessRound args
+            OnPlayingRoundStarted(new RoundArgs(readerIndex, selections, isShield, isSword, score));
 
             if (selections[readerIndex] == -1)
             {
@@ -182,7 +188,7 @@ namespace STCore
             if(winners.Count == 1)
                 return winners[0];
 
-            OnGameOverEnded();
+            OnGameOverEnded(new GameOverArgs(winner, score, breaker));
             return breaker.BreakTie(winners.ToArray());
         }
     }

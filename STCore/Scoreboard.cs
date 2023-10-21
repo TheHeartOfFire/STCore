@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static STCore.EventArgs;
 using static STCore.GameCore;
 
 namespace STCore
@@ -11,8 +12,8 @@ namespace STCore
     {
         private int[] points;
         public int[] GetPoints() => points;
-        public event Notify PlayingPointsChanged;
-        protected virtual void OnPlayingPointsChanged() => PlayingPointsChanged?.Invoke();
+        public event PointsChangedEventHandler PlayingPointsChanged;
+        protected virtual void OnPlayingPointsChanged(PointsChangedArgs e) => PlayingPointsChanged?.Invoke(e);
         public Scoreboard(int playerCount)
         {
             points = new int[playerCount];
@@ -25,9 +26,8 @@ namespace STCore
         /// <param name="qty"></param>
         public void AddPoints(int idx, int qty)
         {
-            var old = points[idx];
-            OnPlayingPointsChanged(); //TODO: This event needs to pass args for old point value and new point value
             points[idx] += qty;
+            OnPlayingPointsChanged(new PointsChangedArgs(qty, idx, points));
         }
         /// <summary>
         /// Iterates through every score in points to find the largest one, then return a list of players with that score.
