@@ -146,7 +146,7 @@ namespace STCore_Testing
             new int[] { 2, 4, 0, 2, 1 },// reader 3 | points 3, 3, 3, 0, 2 | +1 to 0 and 3
             new int[] { 3, 1, 0, 3, 4 })]//reader 4 | points 3, 3, 3, 0, 2 | no point increase
 
-        [InlineData(new int[] { 4 }, new int[] { -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, 0, -1 },// shield round 7, sword round 10
+        [InlineData(new int[] { 4 }, new int[] { -1, -1, -1, -1, -1, -1, 1, -1, -1, 0, -1, -1 },// shield round 7, sword round 10
             new int[] { 4, 2, 2, 4, 4, 0 },// reader 0 | points 2, 0, 0, 1, 1, 0 | +2 to 0, +1 to 3 and 4
             new int[] { 1, 4, 1, 0, 4, 0 },// reader 1 | points 2, 1, 0, 1, 2, 0 | +1 to 1 and 4
             new int[] { 2, 5, 1, 2, 1, 2 },// reader 2 | points 2, 1, 1, 1, 3, 0 | +1 to 2 and 4

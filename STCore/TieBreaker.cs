@@ -37,12 +37,9 @@ namespace STCore
             }
         }
 
-        private int GetLargest(int player1, int player2)
-        {
-            if (tokens[player1] > tokens[player2])
-                return player1;
-            return player2;
-        }
+        private int GetLargest(int player1, int player2)=>
+            tokens[player1] > tokens[player2] ? player1 : player2;
+
         
         public int BreakTie(int[] players)
         {
@@ -53,7 +50,7 @@ namespace STCore
             int winner = 0;
 
             for (int i = 1; i < players.Length; i++)
-                winner = Array.IndexOf(players, GetLargest(players[winner], players[i]));
+                winner = GetLargest(winner, players[i]);
 
             OnGameOverTieEnded(new TieBreakArgs(tokens, players, winner));
             return winner;

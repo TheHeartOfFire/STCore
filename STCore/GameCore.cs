@@ -135,7 +135,7 @@ namespace STCore
                     vote[selections[i]]++;
                 }
 
-                int loser = readerIndex == 0 ? 1 : 0;
+                int loser = readerIndex == vote.ElementAt(0).Key ? vote.ElementAt(1).Key : vote.ElementAt(0).Key;
 
                 foreach (int i in vote.Keys)
                     if (vote[i] > vote[loser] && i != readerIndex)
@@ -172,10 +172,10 @@ namespace STCore
                 }
             }
 
-            OnPlayingRoundEnded(); //TODO: add event args to show new current round
+            OnPlayingRoundEnded();
             currentRound++;
             if (GetCurrentRound() > GetRoundCount())
-                winner = ProcessGameEnd();
+                ProcessGameEnd();
         }
 
         private int ProcessGameEnd()
@@ -184,12 +184,13 @@ namespace STCore
             ChangeGameState(GAMESTATE.GAME_OVER);
 
             var winners = score.GetWinners();
-            
-            if(winners.Count == 1)
-                return winners[0];
+
+            winner = winners[0];
+            if (winners.Count > 1)
+                winner = breaker.BreakTie(winners.ToArray());
 
             OnGameOverEnded(new GameOverArgs(winner, score, breaker));
-            return breaker.BreakTie(winners.ToArray());
+            return winner;
         }
     }
 }
