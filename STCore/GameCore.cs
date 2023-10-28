@@ -42,7 +42,7 @@ namespace STCore
             GAME_OVER
         };
 
-        private GAMESTATE CurrentGameState;
+        private GAMESTATE CurrentGameState = GAMESTATE.INIT;
         public void ChangeGameState(GAMESTATE newState)
         {
             switch (CurrentGameState)
@@ -105,7 +105,7 @@ namespace STCore
         
         public void Initialize(int playerCount)
         {
-            ChangeGameState(GAMESTATE.INIT);
+            OnInitStarted();
             PlayerCount = playerCount;
             score = new Scoreboard(playerCount);
             breaker = new TieBreaker(playerCount);
